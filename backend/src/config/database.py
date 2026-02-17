@@ -1,15 +1,21 @@
 """
-חיבור ל-PostgreSQL. קורא מ-.env (או מהסביבה).
-כדי לא להתנגש עם PostgreSQL מקומי – הדוקר רץ על פורט 5433.
+Database configuration for the AI Learning Platform.
+
+- Loads connection details from `.env` (or environment variables).
+- Exposes `engine`, `SessionLocal`, and `Base`.
+- Provides `get_db` dependency for FastAPI routes.
 """
+
 import os
 from pathlib import Path
+from typing import Generator
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-# טעינת .env מתיקיית backend (ליד main.py)
+# Load .env from backend root (next to main.py)
 _env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(_env_path)
 
@@ -20,5 +26,19 @@ port = os.getenv("POSTGRES_PORT", "5433")
 db = os.getenv("POSTGRES_DB", "ai_learning_db")
 
 DATABASE_URL = f"postgresql://{user}:{password}@{host}:{port}/{db}"
-engine = create_engine(DATABASE_URL)
+
+engine = create_engine(DATABASE_URL, future=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+
+def get_db() -> Generator:
+    """
+    FastAPI dependency that provides a database session and
+    makes sure it's closed after the request.
+    """
+    db_session = SessionLocal()
+    try:
+        yield db_session
+    finally:
+        db_session.close()
