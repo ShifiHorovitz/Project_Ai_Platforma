@@ -2,7 +2,11 @@ from typing import Optional
 
 import os
 
-import openai
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
 
 
 class AIClient:
@@ -15,8 +19,11 @@ class AIClient:
 
     def __init__(self) -> None:
         api_key = os.getenv("OPENAI_API_KEY")
-        openai.api_key = api_key
-        self.enabled = bool(api_key)
+        self.enabled = bool(api_key) and OPENAI_AVAILABLE
+        if self.enabled:
+            self.client = OpenAI(api_key=api_key)
+        else:
+            self.client = None
 
     async def generate_lesson(
         self,
@@ -31,12 +38,13 @@ class AIClient:
         If no API key is configured, returns a deterministic mock response
         so the system remains demoable.
         """
-        if not self.enabled:
+        if not self.enabled or not self.client:
             return (
                 f"[MOCK RESPONSE]\n\n"
                 f"Topic: {topic} / {sub_topic}\n"
                 f"Prompt: {prompt}\n\n"
-                f"This is where an AI-generated lesson would appear."
+                f"This is where an AI-generated lesson would appear.\n\n"
+                f"To enable real AI responses, set OPENAI_API_KEY in your .env file."
             )
 
         # Simple, clear prompt for the model
@@ -52,15 +60,20 @@ class AIClient:
             f"User prompt: {prompt}"
         )
 
-        completion = await openai.ChatCompletion.acreate(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": user_message},
-            ],
+        # Run sync OpenAI client in executor to make it async-compatible
+        import asyncio
+        completion = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": user_message},
+                ],
+            )
         )
 
-        return completion.choices[0].message["content"].strip()
+        return completion.choices[0].message.content.strip()
 
 
 ai_client = AIClient()

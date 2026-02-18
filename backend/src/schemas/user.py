@@ -9,8 +9,8 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    email: Optional[str] = Field(None)
-    password: Optional[str] = Field(None, min_length=6)
+    email: str = Field(..., description="User email address")
+    password: str = Field(..., min_length=6, description="User password")
 
 
 class UserRead(UserBase):

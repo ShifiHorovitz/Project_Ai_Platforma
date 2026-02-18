@@ -10,8 +10,16 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.post("/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register_user(payload: UserCreate, db: Session = Depends(get_db)):
-    user = UserService.create_user(db, payload)
-    return user
+    try:
+        user = UserService.create_user(db, payload)
+        return user
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Registration failed: {str(e)}"
+        )
 
 
 @router.get("/", response_model=list[UserRead])

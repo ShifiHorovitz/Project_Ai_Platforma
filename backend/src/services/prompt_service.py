@@ -15,17 +15,25 @@ class PromptService:
         if not user or not category or not sub_category:
             raise ValueError("Invalid user/category/sub_category id")
 
-        # AI call – lesson generation (run in a fresh event loop; this thread has none)
+        # AI call – lesson generation
+        # Since generate_lesson is async but we're in a sync context,
+        # we create a new event loop to run it
         import asyncio
 
-        response_text = asyncio.run(
-            ai_client.generate_lesson(
-                topic=category.name,
-                sub_topic=sub_category.name,
-                prompt=data.prompt,
-                user_name=user.name,
+        # Create a new event loop for this thread
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            response_text = loop.run_until_complete(
+                ai_client.generate_lesson(
+                    topic=category.name,
+                    sub_topic=sub_category.name,
+                    prompt=data.prompt,
+                    user_name=user.name,
+                )
             )
-        )
+        finally:
+            loop.close()
 
         prompt = Prompt(
             user_id=user.id,
