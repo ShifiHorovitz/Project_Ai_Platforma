@@ -54,11 +54,11 @@ cd frontend
 npm install
 npm run dev
 
-## 🔐 Environment Variables (.env)
+### 🔐 Environment Variables (.env)
 
 Essential configuration for the `backend/` directory:
 
-* **GOOGLE_API_KEY**: Your Gemini API Key.
+* **OPENAI_API_KEY**: Your OpenAI API Key (starts with `sk-`).
 * **ADMIN_EMAIL**: The email address that will be granted Admin privileges.
 * **POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD**: Database credentials.
 * **POSTGRES_PORT**: Set to `5433` to match the docker configuration.
@@ -69,7 +69,7 @@ Essential configuration for the `backend/` directory:
 * **Languages**: Python 3.12, TypeScript.
 * **Styling**: Tailwind CSS.
 * **Database**: PostgreSQL with SQLAlchemy.
-* **AI**: Google Generative AI (Gemini).
+* **AI**: OpenAI GPT API.
 
 ---
 *Created as a Full Stack development assessment project.*
