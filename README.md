@@ -1,210 +1,75 @@
-# AI Learning Platform - Full Stack Project
+# AI Learning Platform - Full Stack Project 🚀
 
-A full-stack learning platform where users can select topics, send prompts to AI, and receive personalized lessons.
+A comprehensive learning platform where users receive personalized, AI-generated lessons based on their chosen topics.
 
 ## 🎯 Project Overview
 
-This project implements a **mini MVP** of an AI-driven learning platform with:
+This project is a **Full Stack MVP** that leverages modern AI to create a dynamic educational experience.
+- **Backend**: FastAPI (Python) + PostgreSQL.
+- **Frontend**: React + TypeScript + Tailwind CSS.
+- **Infrastructure**: Containerized PostgreSQL via Docker.
+- **AI Engine**: Google Gemini AI (Generative AI integration).
 
-- **Backend**: FastAPI + PostgreSQL + OpenAI integration
-- **Frontend**: React + TypeScript + Tailwind CSS
-- **Database**: PostgreSQL (via Docker)
-- **AI**: OpenAI GPT API (with mock fallback)
+## 📋 Key Features
 
-## 📋 Features
+### User Experience
+- ✅ **Secure Authentication**: Registration and login flow.
+- ✅ **Personalized Learning**: Select Categories (e.g., Science) and Sub-categories (e.g., Physics).
+- ✅ **AI Tutor**: Send specific prompts and receive structured lessons.
+- ✅ **Learning History**: Access and review all past AI interactions.
 
-### User Features
-- ✅ User registration (name, phone, email)
-- ✅ Category and sub-category selection
-- ✅ Send prompts to AI
-- ✅ View AI-generated lessons
-- ✅ Learning history per user
+### Admin Dashboard
+- ✅ **User Management**: View all registered students and their details.
+- ✅ **Transparency**: Monitor all AI prompts and responses generated in the system.
+- ✅ **Dynamic Permissions**: Auto-promote admins via environment configuration.
 
-### Admin Features
-- ✅ View all users
-- ✅ View all prompts and responses
-- ✅ Admin dashboard
+## 🏗️ Technical Architecture
 
-## 🏗️ Architecture
+### Backend (Clean Architecture)
+```text
+backend/src/
+├── ai/             # Google Gemini API integration
+├── config/         # Database and Auth configurations
+├── models/         # SQLAlchemy DB models (User, Category, Prompt)
+├── routers/        # FastAPI endpoints (The Gatekeepers)
+├── services/       # Business Logic Layer (The Heart of the app)
+└── schemas/        # Pydantic data validation (DTOs)
 
-### Backend Structure
-```
-backend/
-├── src/
-│   ├── config/        # Database configuration
-│   ├── models/        # SQLAlchemy models (User, Category, SubCategory, Prompt)
-│   ├── schemas/       # Pydantic schemas (request/response validation)
-│   ├── services/      # Business logic layer
-│   ├── routers/       # FastAPI route handlers
-│   └── ai/           # AI integration (OpenAI client)
-├── main.py           # FastAPI app entry point
-└── requirements.txt
-```
+🚀 Quick Start
+1. Database Setup (Docker)
+Ensure Docker is running and execute:
 
-### Frontend Structure
-```
-frontend/
-├── src/
-│   ├── components/   # React components
-│   ├── pages/        # Page components
-│   ├── services/     # API service layer
-│   ├── types/        # TypeScript types
-│   └── context/      # React Context (user state)
-└── package.json
-```
+docker-compose -f docker/docker-compose.yml up -d
 
-## 🚀 Quick Start
+2. Backend Setup
 
-### Prerequisites
-- Python 3.12+
-- Node.js 18+
-- Docker & Docker Compose
-
-### Backend Setup
-
-1. **Navigate to backend directory:**
-```bash
 cd backend
-```
-
-2. **Create virtual environment:**
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. **Install dependencies:**
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
-
-4. **Create `.env` file:**
-```bash
-POSTGRES_USER=user
-POSTGRES_PASSWORD=password
-POSTGRES_DB=ai_learning_db
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5433
-OPENAI_API_KEY=your_api_key_here  # Optional - will use mock if not set
-```
-
-5. **Start PostgreSQL with Docker:**
-```bash
-docker-compose -f ../docker/docker-compose.yml up -d
-```
-
-6. **Run the backend:**
-```bash
+# Run server
 python -m uvicorn main:app --reload
-```
 
-Backend will be available at `http://127.0.0.1:8000`
-
-### Frontend Setup
-
-1. **Navigate to frontend directory:**
-```bash
+3. Frontend Setup
 cd frontend
-```
-
-2. **Install dependencies:**
-```bash
 npm install
-```
-
-3. **Create `.env` file (optional):**
-```bash
-VITE_API_URL=http://127.0.0.1:8000
-```
-
-4. **Run the frontend:**
-```bash
 npm run dev
-```
 
-Frontend will be available at `http://localhost:3000`
+## 🔐 Environment Variables (.env)
 
-## 📚 API Documentation
+Essential configuration for the `backend/` directory:
 
-Once the backend is running, visit:
-- **Swagger UI**: `http://127.0.0.1:8000/docs`
-- **ReDoc**: `http://127.0.0.1:8000/redoc`
-
-### Main Endpoints
-
-- `POST /users/` - Register new user
-- `GET /users/` - List all users (admin)
-- `GET /categories/` - List categories
-- `GET /categories/sub?category_id=X` - List sub-categories
-- `POST /prompts/` - Create prompt and get AI response
-- `GET /prompts/user/{user_id}` - Get user's learning history
-- `GET /prompts/` - List all prompts (admin)
-
-## 🗄️ Database Schema
-
-- **users**: id, name, phone, email, is_admin
-- **categories**: id, name
-- **sub_categories**: id, name, category_id
-- **prompts**: id, user_id, category_id, sub_category_id, prompt, response, created_at
-
-## 🧪 Testing the Flow
-
-1. **Register a user** via the frontend
-2. **Select a category** (e.g., "Science")
-3. **Select a sub-category** (e.g., "Space")
-4. **Enter a prompt** (e.g., "Teach me about black holes")
-5. **View the AI-generated lesson**
-6. **Check learning history** to see all previous lessons
-
-## 📝 Example Use Case
-
-> "Israel signs up and selects to learn about Science → Space. He enters a prompt: 'Teach me about black holes.' The system stores his input, sends it to an AI model, and returns a lesson. He can revisit the dashboard later to view all the lessons he received."
+* **GOOGLE_API_KEY**: Your Gemini API Key.
+* **ADMIN_EMAIL**: The email address that will be granted Admin privileges.
+* **POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD**: Database credentials.
+* **POSTGRES_PORT**: Set to `5433` to match the docker configuration.
 
 ## 🛠️ Technologies Used
 
-### Backend
-- FastAPI
-- SQLAlchemy (ORM)
-- PostgreSQL
-- OpenAI API
-- Pydantic (validation)
-- Python-dotenv
+* **Frameworks**: FastAPI, React 18.
+* **Languages**: Python 3.12, TypeScript.
+* **Styling**: Tailwind CSS.
+* **Database**: PostgreSQL with SQLAlchemy.
+* **AI**: Google Generative AI (Gemini).
 
-### Frontend
-- React 18
-- TypeScript
-- Vite
-- React Router
-- Tailwind CSS
-- Axios
-
-## 📦 Project Structure
-
-```
-Project_AI_Platforma/
-├── backend/          # FastAPI backend
-├── frontend/         # React frontend
-├── docker/           # Docker Compose for PostgreSQL
-└── README.md         # This file
-```
-
-## 🔐 Environment Variables
-
-### Backend (.env)
-- `POSTGRES_USER` - Database user
-- `POSTGRES_PASSWORD` - Database password
-- `POSTGRES_DB` - Database name
-- `POSTGRES_HOST` - Database host
-- `POSTGRES_PORT` - Database port (5433 to avoid conflicts)
-- `OPENAI_API_KEY` - OpenAI API key (optional)
-
-### Frontend (.env)
-- `VITE_API_URL` - Backend API URL
-
-## 📄 License
-
-This project is created for educational/assessment purposes.
-
-## 👤 Author
-
-Created as part of a full-stack developer assessment task.
+---
+*Created as a Full Stack development assessment project.*
